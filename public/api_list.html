@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>API list</h1>
+    <label for="input"> Input: </label>
+    <input type="text" id="input" name="input" />
+    <button onclick="sendEnteredInput()">Send</button>
+    <hr />
+    <div id="display"></div>
+    <script>
+      async function sendInput(txt) {
+        await fetch(
+          "/api",
+          (options = {
+            method: "POST",
+            body: JSON.stringify({
+              msg: txt,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        );
+      }
+
+      function sendEnteredInput() {
+        const input = document.getElementById("input");
+        const enteredInput = input.value.trim();
+
+        if (enteredInput.length) {
+          sendInput(enteredInput);
+          getAllData();
+        }
+
+        input.value = "";
+      }
+
+      async function getAllData() {
+        const response = await fetch("/api-data");
+        const data = await response.json();
+        if (!data) return;
+        const display = document.getElementById("display");
+        display.textContent = "";
+
+        for (const i in data) {
+          let newDiv = document.createElement("p");
+          newDiv.textContent = JSON.stringify(data[i]); //.toString();
+          display.appendChild(newDiv);
+        }
+      }
+
+      getAllData();
+    </script>
+  </body>
+</html>
